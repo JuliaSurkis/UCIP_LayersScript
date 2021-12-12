@@ -28,8 +28,10 @@ my_agol = GIS(portal_url, user, pw)
 
 del pw
 
+#get layer with jurisdiction polygons
 counties_munis = my_agol.content.get('c29faaea33da4cb680bf4a0e6a676732').layers[0].query()
 
+#loop through each jurisdiction to create a group and add users for each
 for index, county in enumerate(counties_munis):
     county_name = counties_munis.features[index].attributes['NAME']
     print(county_name)
@@ -41,15 +43,20 @@ for index, county in enumerate(counties_munis):
                                     is_invitation_only = 'True')
     create_group
     
+    #Make sure jurisdiction layer is accessible to the group
     layer_search = my_agol.content.search(query = "UCIP__" + county_name + "_View")
     layer = layer_search[0]
     layer.share(groups = create_group)
     
+    #Make sure the jurisdiction map is accessible to the group
     mapname = "UCIP_" + county_name + "120621_Final"
     map_search = my_agol.content.search(query = 'title:'"UCIP_" + county_name + "_120621_Final")
     map_result = map_search[0]
     map_result.share(groups = create_group)
     
+    #Add assessors by looping through assessor table and checking that their jurisdiction mathces
+    #the jurisdiction for the group that was just created. If it does match, either create or 
+    #add the user based on their email.
     assessor_table = ****
     for index, i in enumerate(assessors):
         admin_email = assessor_table.features[index].attributes['email']
